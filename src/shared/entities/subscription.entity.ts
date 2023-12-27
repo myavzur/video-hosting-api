@@ -8,9 +8,9 @@ export class Subscription extends Base {
 	// Relations 🎫
 	@ManyToOne(() => Channel, channel => channel.subscribers)
 	@JoinColumn({ name: "from_channel_id" })
-	fromChannel: Channel;
+	from_channel: Channel;
 
 	@ManyToOne(() => Channel, channel => channel.subscriptions)
 	@JoinColumn({ name: "to_channel_id" })
-	toChannel: Channel;
+	to_channel: Channel;
 }

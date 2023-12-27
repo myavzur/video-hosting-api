@@ -1,7 +1,7 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, MaxLength } from "class-validator";
 
 import { ChannelEntityLimits } from "@/shared/constants/database.constants";
-import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateTicketDto {
 	@ApiProperty()

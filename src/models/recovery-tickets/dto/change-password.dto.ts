@@ -1,7 +1,7 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsString, MaxLength, MinLength } from "class-validator";
 
 import { ChannelEntityLimits } from "@/shared/constants/database.constants";
-import { ApiProperty } from "@nestjs/swagger";
 
 export class UpdatePasswordDto {
 	@ApiProperty()
@@ -14,5 +14,5 @@ export class UpdatePasswordDto {
 
 	@ApiProperty()
 	@IsString()
-	passwordConfirmation: string;
+	password_confirmation: string;
 }

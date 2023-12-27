@@ -89,7 +89,7 @@ export class VideosController {
 	@UseInterceptors(FileInterceptor("video"))
 	@ApiOperation({
 		summary:
-			"Загружает видео файл для определенного видео в database и обновляет его videoPath"
+			"Загружает видео файл для определенного видео в database и обновляет его file_url"
 	})
 	async uploadVideo(
 		@Session() session: ChannelSession,
@@ -104,7 +104,7 @@ export class VideosController {
 	@UseInterceptors(FileInterceptor("thumbnail"))
 	@ApiOperation({
 		summary:
-			"Загружает превью (thumbnail) для определенного видео в database и обновляет его thumbnailPath"
+			"Загружает превью (thumbnail) для определенного видео в database и обновляет его poster_url"
 	})
 	async uploadThumbnail(
 		@Session() session: ChannelSession,
@@ -127,7 +127,7 @@ export class VideosController {
 		@Param("videoId") videoId: Video["id"],
 		@Body(new ValidationPipe()) dto: UpdateVideoDto
 	) {
-		if (!dto.description && !dto.name && !dto.privacy && !dto.thumbnailPath) {
+		if (!dto.description && !dto.name && !dto.privacy && !dto.poster_url) {
 			throw new BadRequestException("Nothing changing.");
 		}
 

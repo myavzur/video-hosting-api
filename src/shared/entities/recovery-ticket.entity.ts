@@ -14,5 +14,5 @@ export class RecoveryTicket extends BaseEntity {
 	email: string;
 
 	@Column("bigint", { nullable: false })
-	expiresAt: number;
+	expires_at: number;
 }

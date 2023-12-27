@@ -1,12 +1,4 @@
-import {
-	Column,
-	Entity,
-	JoinColumn,
-	JoinTable,
-	ManyToMany,
-	ManyToOne,
-	OneToMany
-} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
 import { VideoEntityLimits } from "../constants/database.constants";
 
@@ -30,13 +22,16 @@ export class Video extends Base {
 	description: string;
 
 	@Column("varchar", { nullable: true })
-	videoPath: string;
-
-	@Column("varchar")
-	originalFileName: string;
+	poster_url: string;
 
 	@Column("varchar", { nullable: true })
-	thumbnailPath: string;
+	file_url: string;
+
+	@Column("varchar")
+	file_name: string;
+
+	@Column("varchar", { nullable: true })
+	file_type: string; // MimeType. Example: video/mp4
 
 	@Column("decimal", { nullable: true })
 	readonly duration?: number;
@@ -45,7 +40,7 @@ export class Video extends Base {
 	views: number;
 
 	@Column("int", { default: 0 })
-	likesValue: number;
+	likes_value: number;
 
 	// * Relations
 	@OneToMany(() => VideoLike, likes => likes.video)

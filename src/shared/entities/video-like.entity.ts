@@ -1,11 +1,22 @@
-import { Entity, JoinColumn, ManyToOne } from "typeorm";
+import {
+	CreateDateColumn,
+	Entity,
+	JoinColumn,
+	ManyToOne,
+	PrimaryGeneratedColumn
+} from "typeorm";
 
-import { Base } from "./base.entity";
 import { Channel } from "./channel.entity";
 import { Video } from "./video.entity";
 
 @Entity({ name: "videos_has_likes" })
-export class VideoLike extends Base {
+export class VideoLike {
+	@PrimaryGeneratedColumn()
+	readonly id: number;
+
+	@CreateDateColumn()
+	readonly created_at: Date;
+
 	@ManyToOne(() => Video, video => video.likes)
 	@JoinColumn({ name: "videoId", referencedColumnName: "id" })
 	video: Video;

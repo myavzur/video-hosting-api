@@ -30,12 +30,12 @@ export class MediaService {
 		await this.ensureDir(outputDir);
 		await this.writeFile(outputFile, file.buffer);
 
-		const duration = file.mimetype.startsWith("video/")
-			? await this.getFileDuration(outputFile)
-			: null;
+		const duration =
+			file.mimetype.startsWith("video/") && (await this.getFileDuration(outputFile));
 
 		return {
-			originalName: file.originalname,
+			originalName: Buffer.from(file.originalname, "latin1").toString("utf8"),
+			mimeType: file.mimetype,
 			duration: duration,
 			outputName: outputName,
 			path: `/uploads/${outputFolder}/${outputName}`
@@ -68,16 +68,12 @@ export class MediaService {
 		return new Promise((resolve, reject) => {
 			const writeStream = fs.createWriteStream(path);
 
-			writeStream.on("error", error => {
-				reject(error);
-			});
-
-			writeStream.on("finish", () => {
-				resolve();
-			});
+			writeStream.on("error", reject);
+			writeStream.on("finish", resolve);
 
 			const readable = new Readable();
-			readable._read = () => {};
+			// Overwrite default _read method;
+			readable._read = () => null;
 			readable.push(buffer);
 			readable.push(null);
 

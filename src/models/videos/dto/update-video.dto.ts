@@ -1,15 +1,9 @@
-import {
-	IsNotEmpty,
-	IsNumber,
-	IsOptional,
-	IsString,
-	MaxLength
-} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
 
 import { VideoEntityLimits } from "@/shared/constants/database.constants";
 
 import { VideoPrivacy } from "../interfaces";
-import { ApiProperty } from "@nestjs/swagger";
 
 export class UpdateVideoDto {
 	@ApiProperty()
@@ -33,5 +27,5 @@ export class UpdateVideoDto {
 	@ApiProperty()
 	@IsOptional()
 	@IsString()
-	thumbnailPath?: string;
+	poster_url?: string;
 }

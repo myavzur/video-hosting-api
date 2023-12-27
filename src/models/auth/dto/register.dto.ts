@@ -1,7 +1,7 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString, MaxLength, MinLength } from "class-validator";
 
 import { ChannelEntityLimits } from "@/shared/constants/database.constants";
-import { ApiProperty } from "@nestjs/swagger";
 
 export class RegisterDto {
 	@ApiProperty()
@@ -21,7 +21,7 @@ export class RegisterDto {
 
 	@ApiProperty()
 	@IsString({ message: "Password confirmation must be a string! What a mess... 🤦" })
-	passwordConfirmation: string;
+	password_confirmation: string;
 
 	@ApiProperty()
 	@IsString({ message: "Name must be a string! Lmao" })

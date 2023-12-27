@@ -3,7 +3,6 @@ import {
 	CreateDateColumn,
 	Entity,
 	JoinColumn,
-	ManyToMany,
 	OneToMany,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn
@@ -21,11 +20,11 @@ export class Channel {
 	readonly id: string;
 
 	@CreateDateColumn()
-	createdAt: Date;
+	created_at: Date;
 
 	@UpdateDateColumn()
-	updatedAt: Date;
-	
+	updated_at: Date;
+
 	@Column("varchar", { unique: true, length: ChannelEntityLimits.NAME_LEN })
 	name: string;
 
@@ -36,16 +35,16 @@ export class Channel {
 	password: string;
 
 	@Column("varchar", { length: 255, nullable: true })
-	avatarPath?: string;
+	avatar_url?: string;
 
 	@Column("text", { default: "" })
 	description: string;
 
 	@Column("boolean", { default: false })
-	isVerified: boolean;
+	is_verified: boolean;
 
 	@Column("int", { default: 0 })
-	subscribersValue?: number;
+	subscribers_value?: number;
 
 	// * Relations
 	@OneToMany(() => VideoLike, likes => likes.channel)
@@ -55,11 +54,11 @@ export class Channel {
 	@JoinColumn({ name: "id", referencedColumnName: "channelId" })
 	videos: Video[];
 
-	@OneToMany(() => Subscription, subscription => subscription.fromChannel)
+	@OneToMany(() => Subscription, subscription => subscription.from_channel)
 	@JoinColumn({ name: "id", referencedColumnName: "to_channel_id" })
 	subscriptions: Subscription[];
 
-	@OneToMany(() => Subscription, subscription => subscription.toChannel)
+	@OneToMany(() => Subscription, subscription => subscription.to_channel)
 	@JoinColumn({ name: "id", referencedColumnName: "from_channel_id" })
 	subscribers: Subscription[];
 }

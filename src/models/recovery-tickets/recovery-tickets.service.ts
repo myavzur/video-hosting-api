@@ -1,5 +1,4 @@
 import {
-	BadGatewayException,
 	BadRequestException,
 	ForbiddenException,
 	Injectable,
@@ -40,7 +39,7 @@ export class RecoveryTicketsService {
 	 */
 	async createTicket(res: Response, dto: CreateTicketDto) {
 		const channel = await this.channelsService.findByEmail(dto.email);
-		if (!channel) throw new NotFoundException('Channel does not exist');
+		if (!channel) throw new NotFoundException("Channel does not exist");
 
 		const $hash = await bcrypt.hash(Date.now().toString(), 5);
 		const $hashModified = $hash.replace(/[^\w\d]/gm, ""); // ? Remove Symbols from hash for correct routing at frontend
@@ -64,7 +63,7 @@ export class RecoveryTicketsService {
 
 		await this.recoveryTicketsRepository.save({
 			email: channel.email,
-			expiresAt: Date.now() + FIVE_MINUTES,
+			expires_at: Date.now() + FIVE_MINUTES,
 			hash: $hashModified
 		});
 
@@ -78,7 +77,7 @@ export class RecoveryTicketsService {
 		this.verifyHash(req);
 
 		const ticket = await this.findByHash(req.cookies[CookieKeys.RECOVERY_HASH]);
-		const isExpired = ticket?.expiresAt - Date.now() <= 0;
+		const isExpired = ticket?.expires_at - Date.now() <= 0;
 
 		if (!ticket || isExpired) {
 			throw new BadRequestException("Ticket does't exist or expired.");
@@ -107,7 +106,7 @@ export class RecoveryTicketsService {
 	// ! FindBy, DeleteBy, little helpers...
 	async clearExpiredTickets() {
 		await this.recoveryTicketsRepository.delete({
-			expiresAt: LessThan(Date.now())
+			expires_at: LessThan(Date.now())
 		});
 	}
 

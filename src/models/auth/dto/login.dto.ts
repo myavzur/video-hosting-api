@@ -1,7 +1,7 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString, MaxLength, MinLength } from "class-validator";
 
 import { ChannelEntityLimits } from "@/shared/constants/database.constants";
-import { ApiProperty } from "@nestjs/swagger";
 
 export class LoginDto {
 	@ApiProperty()

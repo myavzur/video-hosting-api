@@ -25,11 +25,14 @@ export class AuthService {
 
 	// * Authorization
 	async register(session: ChannelSession, dto: RegisterDto) {
-		if (dto.password !== dto.passwordConfirmation) {
+		if (dto.password !== dto.password_confirmation) {
 			throw new BadRequestException("Passwords didn't match");
 		}
 
-		const oldChannel = await this.channelsService.findByEmailOrName(dto.email, dto.name);
+		const oldChannel = await this.channelsService.findByEmailOrName(
+			dto.email,
+			dto.name
+		);
 
 		if (oldChannel) {
 			throw new BadRequestException("Channel already exists");
@@ -44,7 +47,7 @@ export class AuthService {
 
 	async login(session: ChannelSession, dto: LoginDto) {
 		const channel = await this.channelsService.findByEmailWithPassword(dto.email);
-		if (!channel) throw new NotFoundException('Channel does not exist');
+		if (!channel) throw new NotFoundException("Channel does not exist");
 
 		const isCorrectPassword = await bcrypt.compare(dto.password, channel.password);
 

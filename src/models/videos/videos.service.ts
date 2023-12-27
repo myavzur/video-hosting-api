@@ -1,5 +1,4 @@
 import {
-	BadGatewayException,
 	BadRequestException,
 	ForbiddenException,
 	Injectable,
@@ -35,8 +34,8 @@ export class VideosService {
 		const newVideo = await this.videosRepository.save({
 			channel: { id: channelId },
 			privacy: VideoPrivacy.PRIVATE,
-			name: dto.originalFileName.split(".")[0],
-			originalFileName: dto.originalFileName
+			name: dto.file_name.split(".")[0],
+			file_name: dto.file_name
 		});
 
 		return newVideo;
@@ -49,27 +48,28 @@ export class VideosService {
 		videoId: Video["id"]
 	) {
 		if (!file.mimetype.startsWith("video/")) {
-			throw new BadRequestException("Only videos available.");
+			throw new BadRequestException("Only video files are available.");
 		}
 
 		const video = await this.findById(videoId);
 
 		if (video.channel.id !== channelId) {
 			throw new ForbiddenException(
-				"Not permitted to upload content for other channel's videos"
+				"You don't have permission to modify this video."
 			);
 		}
 
-		if (video.videoPath) {
-			throw new BadRequestException("Video already has content!");
+		if (video.file_url) {
+			throw new BadRequestException("Video already has content.");
 		}
 
 		const outputFile = await this.mediaService.saveFile(file, "v");
 
 		return await this.videosRepository.save({
 			...video,
-			videoPath: outputFile.path,
-			originalFileName: outputFile.originalName,
+			file_url: outputFile.path,
+			file_name: outputFile.originalName,
+			file_type: outputFile.mimeType,
 			duration: outputFile.duration
 		});
 	}
@@ -80,14 +80,14 @@ export class VideosService {
 		videoId: Video["id"]
 	) {
 		if (!file.mimetype.startsWith("image/")) {
-			throw new BadRequestException("Only images available.");
+			throw new BadRequestException("Only image files are available.");
 		}
 
 		const video = await this.findById(videoId);
 
 		if (video.channel.id !== channelId) {
 			throw new ForbiddenException(
-				"Not permitted to upload thumbnail for other channel's videos"
+				"You don't have permission to modify this video."
 			);
 		}
 
@@ -95,7 +95,7 @@ export class VideosService {
 
 		return await this.videosRepository.save({
 			...video,
-			thumbnailPath: outputFile.path
+			poster_url: outputFile.path
 		});
 	}
 
@@ -107,10 +107,12 @@ export class VideosService {
 		const video = await this.findById(videoId);
 
 		if (video.channel.id !== channelId) {
-			throw new ForbiddenException("Not permitted to update other channel's videos");
+			throw new ForbiddenException(
+				"You don't have permission to modify this video."
+			);
 		}
 
-		if (!video.videoPath) {
+		if (!video.file_url) {
 			throw new BadRequestException(
 				"Firstly you need to upload content for this video. POST /api/videos/upload"
 			);
@@ -136,7 +138,7 @@ export class VideosService {
 			relations: {
 				video: { channel: true }
 			},
-			order: { createdAt: "DESC" }
+			order: { created_at: "DESC" }
 		});
 
 		return videosLiked;
@@ -152,13 +154,13 @@ export class VideosService {
 		const isLiked = await this.likesRepository.findOneBy(params);
 
 		if (!isLiked) {
-			videoToLike.likesValue++;
+			videoToLike.likes_value++;
 			await this.videosRepository.save(videoToLike);
 			await this.likesRepository.save(params);
 			return { result: LikeResult.LIKED };
 		}
 
-		videoToLike.likesValue--;
+		videoToLike.likes_value--;
 		await this.videosRepository.save(videoToLike);
 		await this.likesRepository.delete(params);
 		return { result: LikeResult.UNLIKED };
@@ -168,7 +170,9 @@ export class VideosService {
 		const video = await this.findById(videoId);
 
 		if (video.channel.id !== channelId) {
-			throw new ForbiddenException("Not permitted to delete other channel's videos");
+			throw new ForbiddenException(
+				"You don't have permission to delete this video."
+			);
 		}
 
 		return await this.videosRepository.delete({ id: videoId });
@@ -199,7 +203,7 @@ export class VideosService {
 		} else {
 			findOptions = {
 				...findOptions,
-				order: { createdAt: "DESC" }
+				order: { created_at: "DESC" }
 			};
 		}
 
@@ -232,12 +236,12 @@ export class VideosService {
 	 * or GET(/api/channels/me)
 	 */
 	async findByChannelId(channelId: Channel["id"], isStudio?: boolean) {
-		let findOptions: FindManyOptions<Video> = {
+		const findOptions: FindManyOptions<Video> = {
 			where: {
 				channel: { id: channelId }
 			},
 			relations: { channel: true },
-			order: { createdAt: "DESC" }
+			order: { created_at: "DESC" }
 		};
 
 		if (!isStudio) {
@@ -267,17 +271,15 @@ export class VideosService {
 			}
 		});
 
-		if (!video) throw new NotFoundException("Video doesn't exist. 😓");
+		if (!video) throw new NotFoundException("Video doesn't exist.");
 		if (
 			video.privacy === VideoPrivacy.PRIVATE &&
 			channelId &&
 			video.channel.id !== channelId
 		) {
 			// This is need to confuse user if he just typing random id's to check if there are private videos.
-			throw new NotFoundException("Video doesn't exist. 😓");
+			throw new NotFoundException("Video doesn't exist.");
 		}
-
-		let isLiked;
 
 		// * Returns video with {isLiked} by {channelId} if {channelId} is passed.
 		// * Overwise - returns {video} without {isLiked} field
@@ -293,11 +295,9 @@ export class VideosService {
 				}
 			});
 
-			like ? (isLiked = true) : (isLiked = false);
-
 			return {
 				...video,
-				isLiked
+				is_liked: Boolean(like)
 			};
 		}
 

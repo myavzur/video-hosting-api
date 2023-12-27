@@ -5,5 +5,5 @@ export class CreateDraftVideoDto {
 	@ApiProperty()
 	@IsOptional()
 	@IsString()
-	originalFileName: string;
+	file_name: string;
 }

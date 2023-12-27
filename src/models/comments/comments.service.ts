@@ -18,7 +18,7 @@ export class CommentsService {
 		const newComment = await this.commentsRepository.save({
 			content: dto.content,
 			channel: { id: channelId },
-			video: { id: dto.videoId }
+			video: { id: dto.video_id }
 		});
 
 		return newComment;

@@ -5,8 +5,8 @@ export abstract class Base {
 	readonly id: number;
 
 	@CreateDateColumn()
-	readonly createdAt: Date;
+	readonly created_at: Date;
 
 	@UpdateDateColumn()
-	readonly updatedAt: Date;
+	readonly updated_at: Date;
 }

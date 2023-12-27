@@ -11,9 +11,6 @@ import {
 	VideoLike
 } from "@/shared/entities";
 
-// Current Working Direction (node process) = budget-up/server
-const CWD = process.cwd();
-
 @Module({
 	imports: [
 		TypeOrmModule.forRootAsync({

@@ -5,8 +5,6 @@ import * as cookieParser from "cookie-parser";
 
 import { SessionsModule } from "@/config/session";
 
-import { formatDate, formatTime } from "@/shared/helpers";
-
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
@@ -40,7 +38,9 @@ async function bootstrap() {
 	// Started
 	await app.listen(process.env.APP_PORT, () => {
 		const logger = new Logger("Bootstrap");
-		logger.verbose('🚀 Application is running on: http://localhost:' + process.env.APP_PORT);
+		logger.verbose(
+			"🚀 Application is running on: http://localhost:" + process.env.APP_PORT
+		);
 	});
 }
 bootstrap();

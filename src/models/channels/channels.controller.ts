@@ -1,14 +1,4 @@
-import {
-	Body,
-	Controller,
-	Get,
-	Param,
-	Patch,
-	Put,
-	Session,
-	UseGuards,
-	ValidationPipe
-} from "@nestjs/common";
+import { Controller, Get, Param, Patch, Session, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { Channel } from "@/shared/entities";
@@ -17,7 +7,6 @@ import { ChannelSession } from "@/shared/interfaces";
 import { AuthGuard } from "@/models/auth/guards";
 
 import { ChannelsService } from "./channels.service";
-import { UpdateChannelDto } from "./dto";
 
 @ApiTags("Channels")
 @Controller("channels")

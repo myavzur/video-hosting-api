@@ -1,7 +1,7 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional, IsString, MaxLength } from "class-validator";
 
 import { ChannelEntityLimits } from "@/shared/constants/database.constants";
-import { ApiProperty } from "@nestjs/swagger";
 
 export class UpdateChannelDto {
 	@ApiProperty()
@@ -20,5 +20,5 @@ export class UpdateChannelDto {
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
-	avatarPath?: string;
+	avatar_url?: string;
 }

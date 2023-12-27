@@ -1,8 +1,4 @@
-import {
-	BadRequestException,
-	Injectable,
-	NotFoundException
-} from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
 import { Repository } from "typeorm";
@@ -40,11 +36,11 @@ export class ChannelsService {
 	/** ONLY AUTHORIZED USER could update ONLY HIS channel. */
 	async updateChannel(id: Channel["id"], dto: UpdateChannelDto) {
 		const channel = await this.findById(id);
-		if (!channel) throw new NotFoundException('Channel does not exist');
+		if (!channel) throw new NotFoundException("Channel does not exist");
 
 		channel.name = dto.name;
 		channel.description = dto.description;
-		channel.avatarPath = dto.avatarPath;
+		channel.avatar_url = dto.avatar_url;
 
 		return await this.channelsRepository.save(channel);
 	}
@@ -52,7 +48,7 @@ export class ChannelsService {
 	/** Updates channel's password by email. */
 	async updatePassword(email: Channel["email"], newPassword: string) {
 		const channel = await this.findByEmail(email);
-		if (!channel) throw new NotFoundException('Channel does not exist');
+		if (!channel) throw new NotFoundException("Channel does not exist");
 
 		const $password = await bcrypt.hash(newPassword, 5);
 
@@ -62,29 +58,30 @@ export class ChannelsService {
 	}
 
 	/** Subscribe or unsubscribe to channel */
-	async subscribe(fromChannelId: Channel["id"], toChannelId: Channel["id"]) {
-		if (fromChannelId === toChannelId) {
+	async subscribe(from_channelId: Channel["id"], to_channelId: Channel["id"]) {
+		if (from_channelId === to_channelId) {
 			throw new BadRequestException();
 		}
 
 		const params = {
-			fromChannel: { id: fromChannelId },
-			toChannel: { id: toChannelId }
+			from_channel: { id: from_channelId },
+			to_channel: { id: to_channelId }
 		};
 
-		const channelToSubscribe = await this.findById(toChannelId);
-		if (!channelToSubscribe) throw new NotFoundException('Provided channel to subscribe does not exist')
+		const channelToSubscribe = await this.findById(to_channelId);
+		if (!channelToSubscribe)
+			throw new NotFoundException("Provided channel to subscribe does not exist");
 
 		const isSubscribed = await this.subscriptionsRepository.findOneBy(params);
 
 		if (!isSubscribed) {
-			channelToSubscribe.subscribersValue++;
+			channelToSubscribe.subscribers_value++;
 			await this.channelsRepository.save(channelToSubscribe);
 			await this.subscriptionsRepository.save(params);
 			return { result: SubscriptionResult.SUBSCRIBED };
 		}
 
-		channelToSubscribe.subscribersValue--;
+		channelToSubscribe.subscribers_value--;
 		await this.channelsRepository.save(channelToSubscribe);
 		await this.subscriptionsRepository.delete(params);
 		return { result: SubscriptionResult.UNSUBSCRIBED };
@@ -98,10 +95,10 @@ export class ChannelsService {
 		const channel = await this.channelsRepository.findOne({
 			where: { id },
 			relations: {
-				subscriptions: { toChannel: true },
-				subscribers: { fromChannel: true }
+				subscriptions: { to_channel: true },
+				subscribers: { from_channel: true }
 			},
-			order: { createdAt: "DESC" }
+			order: { created_at: "DESC" }
 		});
 
 		const videos = await this.videosService.findByChannelId(channel.id, isStudio);
@@ -115,11 +112,9 @@ export class ChannelsService {
 
 	// Юзается для регистрации (Name и Email уникальны для каждого)
 	async findByEmailOrName(email: Channel["email"], name: Channel["name"]) {
-		console.log(email, name)
-		const channel = await this.channelsRepository.findOneBy([
-			{email}, {name}
-		]);
-		console.log(channel)
+		console.log(email, name);
+		const channel = await this.channelsRepository.findOneBy([{ email }, { name }]);
+		console.log(channel);
 		return channel;
 	}
 
@@ -128,20 +123,20 @@ export class ChannelsService {
 			where: { email },
 			relations: {
 				videos: true,
-				subscriptions: { toChannel: true },
-				subscribers: { fromChannel: true }
+				subscriptions: { to_channel: true },
+				subscribers: { from_channel: true }
 			},
 			select: {
 				id: true,
 				email: true,
 				password: true,
-				createdAt: true,
-				updatedAt: true,
+				created_at: true,
+				updated_at: true,
 				name: true,
 				description: true,
-				avatarPath: true,
-				isVerified: true,
-				subscribersValue: true
+				avatar_url: true,
+				is_verified: true,
+				subscribers_value: true
 			}
 		});
 	}
@@ -149,8 +144,8 @@ export class ChannelsService {
 	async findAll() {
 		return await this.channelsRepository.find({
 			relations: {
-				subscriptions: { toChannel: true },
-				subscribers: { fromChannel: true }
+				subscriptions: { to_channel: true },
+				subscribers: { from_channel: true }
 			}
 		});
 	}
